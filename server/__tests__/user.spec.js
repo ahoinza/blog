@@ -2,6 +2,8 @@ const request = require('supertest');
 
 const app = require('../src/app');
 
+jest.setTimeout(30000);
+
 describe('User tests', () => {
   let userId;
 
@@ -11,12 +13,10 @@ describe('User tests', () => {
       .send({
         username: 'test',
         email: 'test@test.com',
-        profilePic:
-          'https://www.business2community.com/wp-content/uploads/2017/08/blank-profile-picture-973460_640.png',
         password: 'test123',
       })
-      .expect(201)
-      .expect('Content-Type', /json/);
+      .expect('Content-Type', /json/)
+      .expect(201);
 
     userId = response.body.id;
 
@@ -26,8 +26,7 @@ describe('User tests', () => {
         user: expect.objectContaining({
           username: 'test',
           email: 'test@test.com',
-          profilePic:
-            'https://www.business2community.com/wp-content/uploads/2017/08/blank-profile-picture-973460_640.png',
+          profilePic: '',
           role: 'User',
           password: expect.not.toBe('test123'),
         }),
@@ -39,8 +38,8 @@ describe('User tests', () => {
     const response = await request(app)
       .post('/api/users/login')
       .send({ username: 'test', password: 'test123' })
-      .expect(200)
-      .expect('Content-Type', /json/);
+      .expect('Content-Type', /json/)
+      .expect(200);
 
     expect(response.body).toEqual(
       expect.objectContaining({
@@ -59,8 +58,8 @@ describe('User tests', () => {
   it('GET /api/users should get all users', async () => {
     const response = await request(app)
       .get('/api/users')
-      .expect(200)
-      .expect('Content-Type', /json/);
+      .expect('Content-Type', /json/)
+      .expect(200);
 
     expect(response.body).toEqual(
       expect.arrayContaining([
@@ -76,8 +75,8 @@ describe('User tests', () => {
   it('GET /api/users/:uid schould get specific user', async () => {
     const response = await request(app)
       .get(`/api/users/${userId}`)
-      .expect(200)
-      .expect('Content-Type', /json/);
+      .expect('Content-Type', /json/)
+      .expect(200);
 
     expect(response.body).toEqual(
       expect.objectContaining({
@@ -99,8 +98,8 @@ describe('User tests', () => {
         role: 'Admin',
         password: 'updated123',
       })
-      .expect(200)
-      .expect('Content-Type', /json/);
+      .expect('Content-Type', /json/)
+      .expect(200);
 
     expect(response.body).toEqual(
       expect.objectContaining({
@@ -120,8 +119,8 @@ describe('User tests', () => {
   it('DELETE /api/users/:uid', async () => {
     const response = await request(app)
       .delete(`/api/users/${userId}`)
-      .expect(200)
-      .expect('Content-Type', /json/);
+      .expect('Content-Type', /json/)
+      .expect(200);
 
     expect(response.body).toEqual(
       expect.objectContaining({ message: 'User deleted successfully.' })
@@ -132,8 +131,8 @@ describe('User tests', () => {
   it('GET /incorrect/route should throw 404 error', async () => {
     const response = await request(app)
       .get('/incorrect/route')
-      .expect(404)
-      .expect('Content-Type', /json/);
+      .expect('Content-Type', /json/)
+      .expect(404);
 
     expect(response.body).toEqual(expect.objectContaining({ message: 'Route not found.' }));
   });
